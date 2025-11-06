@@ -1,0 +1,164 @@
+
+======== 基本情報 ========
+
+
+Path
+----
+C:\dev\HikariMuvies
+
+
+
+FullName                                      Length
+--------                                      ------
+C:\dev\HikariMuvies\.nojekyll                      0
+C:\dev\HikariMuvies\css\style.css               8009
+C:\dev\HikariMuvies\diagnose_hikarimovies.txt   4647
+C:\dev\HikariMuvies\index.html                  6002
+C:\dev\HikariMuvies\js\app.js                   5083
+C:\dev\HikariMuvies\js\editorCore.js            5279
+C:\dev\HikariMuvies\js\materialsManager.js      1276
+C:\dev\HikariMuvies\js\projectManager.js        1377
+C:\dev\HikariMuvies\js\screenManager.js          683
+C:\dev\HikariMuvies\js\timelineManager.js       1076
+
+
+
+======== 主ファイルの存在確認 ========
+
+
+Path                   Exists
+----                   ------
+index.html               True
+css/style.css            True
+js/app.js                True
+js/screenManager.js      True
+js/projectManager.js     True
+js/editorCore.js         True
+js/timelineManager.js    True
+js/materialsManager.js   True
+
+
+
+======== index.html 抜粋とパス検査 ========
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HikariMovies - 動画編集アプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:,"></head>
+
+
+-- script/src と base, icon 行 --
+
+   8: <link rel="icon" href="data:,"></head>
+
+ 136: <script src="js/app.js" type="module"></script>
+
+
+-- 先頭スラッシュ参照の検出 --
+
+
+
+======== ESM import 行の一覧 (各JS) ========
+
+
+File   Specifier             IsRelative HasExt Resolved                                     Exists
+----   ---------             ---------- ------ --------                                     ------
+app.js ./editorCore.js             True   True C:\dev\HikariMuvies\js\.\editorCore.js         True
+app.js ./materialsManager.js       True   True C:\dev\HikariMuvies\js\.\materialsManager.js   True
+app.js ./projectManager.js         True   True C:\dev\HikariMuvies\js\.\projectManager.js     True
+app.js ./screenManager.js          True   True C:\dev\HikariMuvies\js\.\screenManager.js      True
+app.js ./timelineManager.js        True   True C:\dev\HikariMuvies\js\.\timelineManager.js    True
+
+
+
+======== 疑義のある import (相対でない/拡張子なし/解決先なし) ========
+
+問題の疑いは見つかりませんでした。
+
+
+======== 本番URL応答 (CNAME側) ========
+
+200  ContentType=  Length=5965
+
+<!DOCTYPE html> <html lang="ja"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>HikariMuvies - 動画編集アプリ</title> <link rel="s
+
+200  ContentType=  Length=5081
+
+// HikariMuvies - メインアプリケーション import { ScreenManager } from './screenManager.js'; import { ProjectManager } from './projectManager.js'; import { EditorCore } from './editorCore.js'; import { TimelineM
+
+200  ContentType=  Length=681
+
+export class ScreenManager { constructor() { this.screens = { 'start-screen': document.getElementById('start-screen'), 'import-screen': document.getElementById('imp
+
+200  ContentType=  Length=1375
+
+export class ProjectManager { constructor() { this.storageKey = 'hikarimuvies_projects'; } getSavedProjects() { const data = localStorage.getItem(this.storageKey); return data 
+
+200  ContentType=  Length=5277
+
+export class EditorCore { constructor() { this.canvas = document.getElementById('preview-canvas'); this.ctx = this.canvas.getContext('2d'); this.projectData = this.createEm
+
+200  ContentType=  Length=1074
+
+export class TimelineManager { constructor(editorCore) { this.editor = editorCore; this.currentMode = 'video'; this.selectedObject = null; this.init(); } in
+
+200  ContentType=  Length=1274
+
+export class MaterialsManager { constructor(editorCore) { this.editor = editorCore; this.materials = []; this.currentCategory = 'all'; this.init(); } init()
+
+
+======== CNAME vs Pages直の比較 ========
+
+### /js/app.js
+
+CNAME側  : 200 
+
+Pages直  : 200 
+
+### /js/screenManager.js
+
+CNAME側  : 200 
+
+Pages直  : 200 
+
+### /js/projectManager.js
+
+CNAME側  : 200 
+
+Pages直  : 200 
+
+### /js/editorCore.js
+
+CNAME側  : 200 
+
+Pages直  : 200 
+
+### /js/timelineManager.js
+
+CNAME側  : 200 
+
+Pages直  : 200 
+
+### /js/materialsManager.js
+
+CNAME側  : 200 
+
+Pages直  : 200 
+
+
+======== index.html の最小修正適用 ========
+
+index.html を標準形に整形しました。
+
+
+======== .nojekyll 作成 ========
+
+.nojekyll を作成しました。
+
+
+======== サマリー ========
+
+診断完了: 対象 8 件, import 5 件, 所要 8s
+

@@ -1,11 +1,11 @@
-// HikariMuvies - メインアプリケーション
+// HikariMovies - メインアプリケーション
 import { ScreenManager } from './screenManager.js';
 import { ProjectManager } from './projectManager.js';
 import { EditorCore } from './editorCore.js';
 import { TimelineManager } from './timelineManager.js';
 import { MaterialsManager } from './materialsManager.js';
 
-class HikariMuvies {
+class HikariMovies {\n  safeBind(id, event, handler) { try { const el = document.getElementById(id); if(!el){ console.warn(`[bind-miss] #${id}`); return; } el.addEventListener(event, handler); } catch(e){ console.error(`[bind-err] #${id}`, e); alert("バインドエラー: #"+id+" "+e.message); } }
     constructor() {
         this.screenManager = new ScreenManager();
         this.projectManager = new ProjectManager();
@@ -24,7 +24,7 @@ class HikariMuvies {
         document.getElementById('back-from-import').addEventListener('click', () => this.screenManager.showScreen('start-screen'));
         document.getElementById('add-project-file').addEventListener('click', () => document.getElementById('project-file-input').click());
         document.getElementById('project-file-input').addEventListener('change', (e) => this.importProjectFile(e.target.files[0]));
-        document.getElementById('back-to-start').addEventListener('click', () => {
+        this.safeBind('','click',() => {
             if (confirm('編集内容が保存されていない可能性があります。スタート画面に戻りますか？')) {
                 this.screenManager.showScreen('start-screen');
             }
@@ -103,6 +103,6 @@ class HikariMuvies {
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    window.hikariMuvies = new HikariMuvies();
-});
+window.addEventListener('DOMContentLoaded', () => { try { window.HikariMovies = new HikariMovies();
+} } catch (e) { console.error(e); alert("起動時エラー: " + e.message); } );
+

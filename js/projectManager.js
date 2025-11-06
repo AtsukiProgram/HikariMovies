@@ -1,5 +1,5 @@
 export class ProjectManager {
-    constructor() { this.storageKey = 'hikarimuvies_projects'; }
+    constructor() { this.storageKey = 'HikariMovies_projects'; }
     getSavedProjects() {
         const data = localStorage.getItem(this.storageKey);
         return data ? JSON.parse(data) : [];
@@ -33,3 +33,5 @@ export class ProjectManager {
     }
     generateId() { return 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
 }
+
+
