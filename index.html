@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HikariMuvies - 動画編集アプリ</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- スタート画面 -->
+    <div id="start-screen" class="screen active">
+        <div class="container">
+            <h1 class="app-title">HikariMuvies</h1>
+            <p class="app-author">製作者: AtsukiGames</p>
+            
+            <div class="option-container">
+                <div class="option-card" id="new-project-btn">
+                    <div class="option-icon">📝</div>
+                    <h2>新規作成</h2>
+                    <p>1から動画を作成する</p>
+                </div>
+                
+                <div class="option-card" id="import-project-btn">
+                    <div class="option-icon">📂</div>
+                    <h2>インポート</h2>
+                    <p>保存されている動画または、編集ファイルを利用して、動画を途中から編集する</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- インポート画面 -->
+    <div id="import-screen" class="screen">
+        <div class="container">
+            <button class="back-btn" id="back-from-import">← 戻る</button>
+            <h2 style="color: white; margin-bottom: 20px;">プロジェクトをインポート</h2>
+            
+            <div class="saved-projects">
+                <div class="project-card add-project" id="add-project-file">
+                    <div class="add-icon">+</div>
+                    <p>ファイルから読み込む</p>
+                </div>
+                <div id="saved-projects-list"></div>
+            </div>
+            <input type="file" id="project-file-input" accept=".hmv" style="display: none;">
+        </div>
+    </div>
+
+    <!-- 編集画面 -->
+    <div id="editor-screen" class="screen">
+        <!-- ヘッダー -->
+        <div class="editor-header">
+            <div class="header-left">
+                <button class="btn" id="back-to-start">← スタート画面</button>
+                <span class="project-name">無題のプロジェクト</span>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" id="save-btn">💾 保存</button>
+            </div>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="editor-content">
+            <!-- 左上: プレビュー -->
+            <div class="preview-section">
+                <div class="preview-controls">
+                    <button class="btn-icon" id="play-pause-btn">▶️</button>
+                    <span id="time-display">0:00 / 0:00</span>
+                </div>
+                <canvas id="preview-canvas"></canvas>
+            </div>
+
+            <!-- 右上: 素材置き場 -->
+            <div class="materials-section">
+                <button class="btn btn-block" id="add-material-btn">➕ 素材を追加</button>
+                <div class="material-categories">
+                    <button class="category-btn active" data-category="all">すべて</button>
+                    <button class="category-btn" data-category="shapes">図形</button>
+                    <button class="category-btn" data-category="text">テキスト</button>
+                    <button class="category-btn" data-category="effects">エフェクト</button>
+                </div>
+                <div id="materials-list" class="materials-list"></div>
+                <input type="file" id="file-drop-input" multiple accept="image/*,video/*,audio/*" style="display: none;">
+            </div>
+        </div>
+
+        <!-- 下部: タイムライン作業場所 -->
+        <div class="timeline-section">
+            <div class="timeline-controls">
+                <button class="mode-btn active" id="video-mode-btn">🎬 動画モード</button>
+                <button class="mode-btn" id="object-mode-btn">🎨 オブジェモード</button>
+            </div>
+
+            <!-- 動画モード -->
+            <div id="video-mode" class="timeline-mode active">
+                <div class="timeline-ruler" id="timeline-ruler"></div>
+                <div class="timeline-tracks" id="timeline-tracks"></div>
+                <div class="timeline-playhead" id="timeline-playhead"></div>
+            </div>
+
+            <!-- オブジェモード -->
+            <div id="object-mode" class="timeline-mode">
+                <div class="object-properties">
+                    <h3>オブジェクト設定</h3>
+                    <div id="object-properties-panel">
+                        <p>オブジェクトを選択してください</p>
+                    </div>
+                </div>
+                <div class="animation-editor">
+                    <canvas id="animation-curve-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存モーダル -->
+    <div id="save-modal" class="modal">
+        <div class="modal-content">
+            <h2>保存オプション</h2>
+            <div class="save-options">
+                <div class="save-option-card" id="save-cookie-btn">
+                    <div class="option-icon">🍪</div>
+                    <h3>保存</h3>
+                    <p>Cookieを利用することで、サイト内に保存します。</p>
+                </div>
+                <div class="save-option-card" id="save-download-btn">
+                    <div class="option-icon">💾</div>
+                    <h3>ダウンロード</h3>
+                    <p>編集データをファイルとしてダウンロードします。</p>
+                </div>
+            </div>
+            <button class="btn" id="close-save-modal">キャンセル</button>
+        </div>
+    </div>
+
+    <script src="js/app.js" type="module"></script>
+</body>
+</html>
