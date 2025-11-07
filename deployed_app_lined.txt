@@ -1,0 +1,109 @@
+    1: // HikariMovies - メインアプリケーション
+    2: import { ScreenManager } from './screenManager.js';
+    3: import { ProjectManager } from './projectManager.js';
+    4: import { EditorCore } from './editorCore.js';
+    5: import { TimelineManager } from './timelineManager.js';
+    6: import { MaterialsManager } from './materialsManager.js';
+    7: 
+    8: class HikariMovies {\n  safeBind(id, event, handler) { try { const el = document.getElementById(id); if(!el){ console.warn(`[bind-miss] #${id}`); return; } el.addEventListener(event, handler); } catch(e){ console.error(`[bind-err] #${id}`, e); alert("バインドエラー: #"+id+" "+e.message); } }
+    9:     constructor() {
+   10:         this.screenManager = new ScreenManager();
+   11:         this.projectManager = new ProjectManager();
+   12:         this.editorCore = null;
+   13:         this.timelineManager = null;
+   14:         this.materialsManager = null;
+   15:         this.init();
+   16:     }
+   17:     init() {
+   18:         this.setupEventListeners();
+   19:         this.loadSavedProjects();
+   20:     }
+   21:     setupEventListeners() {
+   22:         document.getElementById('new-project-btn').addEventListener('click', () => this.startNewProject());
+   23:         document.getElementById('import-project-btn').addEventListener('click', () => this.screenManager.showScreen('import-screen'));
+   24:         document.getElementById('back-from-import').addEventListener('click', () => this.screenManager.showScreen('start-screen'));
+   25:         document.getElementById('add-project-file').addEventListener('click', () => document.getElementById('project-file-input').click());
+   26:         document.getElementById('project-file-input').addEventListener('change', (e) => this.importProjectFile(e.target.files[0]));
+   27:         this.safeBind('','click',() => {
+   28:             if (confirm('編集内容が保存されていない可能性があります。スタート画面に戻りますか？')) {
+   29:                 this.screenManager.showScreen('start-screen');
+   30:             }
+   31:         });
+   32:         document.getElementById('save-btn').addEventListener('click', () => this.showSaveModal());
+   33:         document.getElementById('save-cookie-btn').addEventListener('click', () => this.saveToLocalStorage());
+   34:         document.getElementById('save-download-btn').addEventListener('click', () => this.downloadProject());
+   35:         document.getElementById('close-save-modal').addEventListener('click', () => document.getElementById('save-modal').classList.remove('active'));
+   36:     }
+   37:     startNewProject() {
+   38:         this.screenManager.showScreen('editor-screen');
+   39:         this.initializeEditor();
+   40:     }
+   41:     initializeEditor() {
+   42:         if (!this.editorCore) {
+   43:             this.editorCore = new EditorCore();
+   44:             this.timelineManager = new TimelineManager(this.editorCore);
+   45:             this.materialsManager = new MaterialsManager(this.editorCore);
+   46:         }
+   47:         this.editorCore.start();
+   48:     }
+   49:     loadSavedProjects() {
+   50:         const projects = this.projectManager.getSavedProjects();
+   51:         const container = document.getElementById('saved-projects-list');
+   52:         container.innerHTML = '';
+   53:         projects.forEach(project => {
+   54:             const card = document.createElement('div');
+   55:             card.className = 'project-card';
+   56:             card.innerHTML = <h3> + project.name + </h3><p> + new Date(project.lastModified).toLocaleDateString('ja-JP') + </p>;
+   57:             card.addEventListener('click', () => this.loadProject(project.id));
+   58:             container.appendChild(card);
+   59:         });
+   60:     }
+   61:     loadProject(projectId) {
+   62:         const project = this.projectManager.loadProject(projectId);
+   63:         if (project) {
+   64:             this.screenManager.showScreen('editor-screen');
+   65:             this.initializeEditor();
+   66:             this.editorCore.loadProjectData(project.data);
+   67:         }
+   68:     }
+   69:     importProjectFile(file) {
+   70:         if (!file) return;
+   71:         const reader = new FileReader();
+   72:         reader.onload = (e) => {
+   73:             try {
+   74:                 const data = JSON.parse(e.target.result);
+   75:                 this.screenManager.showScreen('editor-screen');
+   76:                 this.initializeEditor();
+   77:                 this.editorCore.loadProjectData(data);
+   78:             } catch (error) {
+   79:                 alert('ファイルの読み込みに失敗しました: ' + error.message);
+   80:             }
+   81:         };
+   82:         reader.readAsText(file);
+   83:     }
+   84:     showSaveModal() { document.getElementById('save-modal').classList.add('active'); }
+   85:     saveToLocalStorage() {
+   86:         const projectData = this.editorCore.getProjectData();
+   87:         this.projectManager.saveProject(projectData);
+   88:         document.getElementById('save-modal').classList.remove('active');
+   89:         alert('プロジェクトを保存しました！');
+   90:         this.loadSavedProjects();
+   91:     }
+   92:     downloadProject() {
+   93:         const projectData = this.editorCore.getProjectData();
+   94:         const jsonStr = JSON.stringify(projectData, null, 2);
+   95:         const blob = new Blob([jsonStr], { type: 'application/json' });
+   96:         const url = URL.createObjectURL(blob);
+   97:         const a = document.createElement('a');
+   98:         a.href = url;
+   99:         a.download = (projectData.name || '無題のプロジェクト') + '.hmv';
+  100:         a.click();
+  101:         URL.revokeObjectURL(url);
+  102:         document.getElementById('save-modal').classList.remove('active');
+  103:     }
+  104: }
+  105: 
+  106: window.addEventListener('DOMContentLoaded', () => { try { window.HikariMovies = new HikariMovies();
+  107: } } catch (e) { console.error(e); alert("起動時エラー: " + e.message); } );
+  108: 
+  109: 

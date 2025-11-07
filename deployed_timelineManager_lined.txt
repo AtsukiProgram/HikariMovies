@@ -1,0 +1,31 @@
+    1: export class TimelineManager {
+    2:     constructor(editorCore) {
+    3:         this.editor = editorCore;
+    4:         this.currentMode = 'video';
+    5:         this.selectedObject = null;
+    6:         this.init();
+    7:     }
+    8:     init() {
+    9:         this.setupModeSwitch();
+   10:     }
+   11:     setupModeSwitch() {
+   12:         const videoModeBtn = document.getElementById('video-mode-btn');
+   13:         const objectModeBtn = document.getElementById('object-mode-btn');
+   14:         if (videoModeBtn) videoModeBtn.addEventListener('click', () => this.switchMode('video'));
+   15:         if (objectModeBtn) objectModeBtn.addEventListener('click', () => this.switchMode('object'));
+   16:     }
+   17:     switchMode(mode) {
+   18:         this.currentMode = mode;
+   19:         document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+   20:         if (mode === 'video') {
+   21:             const btn = document.getElementById('video-mode-btn');
+   22:             if (btn) btn.classList.add('active');
+   23:         } else {
+   24:             const btn = document.getElementById('object-mode-btn');
+   25:             if (btn) btn.classList.add('active');
+   26:         }
+   27:     }
+   28: }
+   29: 
+   30: 
+   31: 

@@ -1,0 +1,38 @@
+    1: export class MaterialsManager {
+    2:     constructor(editorCore) {
+    3:         this.editor = editorCore;
+    4:         this.materials = [];
+    5:         this.currentCategory = 'all';
+    6:         this.init();
+    7:     }
+    8:     init() {
+    9:         this.setupCategoryButtons();
+   10:         this.setupAddMaterial();
+   11:         this.loadDefaultMaterials();
+   12:     }
+   13:     setupCategoryButtons() {
+   14:         const categoryBtns = document.querySelectorAll('.category-btn');
+   15:         categoryBtns.forEach(btn => {
+   16:             btn.addEventListener('click', () => {
+   17:                 categoryBtns.forEach(b => b.classList.remove('active'));
+   18:                 btn.classList.add('active');
+   19:                 this.currentCategory = btn.dataset.category;
+   20:             });
+   21:         });
+   22:     }
+   23:     setupAddMaterial() {
+   24:         const addBtn = document.getElementById('add-material-btn');
+   25:         if (addBtn) addBtn.addEventListener('click', () => document.getElementById('file-drop-input').click());
+   26:     }
+   27:     loadDefaultMaterials() {
+   28:         const defaultMaterials = [
+   29:             { id: 'rect', name: '矩形', type: 'shape', icon: '▭' },
+   30:             { id: 'circle', name: '円', type: 'shape', icon: '●' },
+   31:             { id: 'text', name: 'テキスト', type: 'text', icon: 'T' }
+   32:         ];
+   33:         this.materials = defaultMaterials;
+   34:     }
+   35: }
+   36: 
+   37: 
+   38: 

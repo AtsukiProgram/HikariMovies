@@ -1,0 +1,38 @@
+    1: export class ProjectManager {
+    2:     constructor() { this.storageKey = 'HikariMovies_projects'; }
+    3:     getSavedProjects() {
+    4:         const data = localStorage.getItem(this.storageKey);
+    5:         return data ? JSON.parse(data) : [];
+    6:     }
+    7:     saveProject(projectData) {
+    8:         const projects = this.getSavedProjects();
+    9:         const projectId = projectData.id || this.generateId();
+   10:         const existingIndex = projects.findIndex(p => p.id === projectId);
+   11:         const projectInfo = {
+   12:             id: projectId,
+   13:             name: projectData.name || '無題のプロジェクト',
+   14:             lastModified: Date.now(),
+   15:             data: projectData
+   16:         };
+   17:         if (existingIndex >= 0) {
+   18:             projects[existingIndex] = projectInfo;
+   19:         } else {
+   20:             projects.push(projectInfo);
+   21:         }
+   22:         localStorage.setItem(this.storageKey, JSON.stringify(projects));
+   23:         return projectId;
+   24:     }
+   25:     loadProject(projectId) {
+   26:         const projects = this.getSavedProjects();
+   27:         return projects.find(p => p.id === projectId);
+   28:     }
+   29:     deleteProject(projectId) {
+   30:         let projects = this.getSavedProjects();
+   31:         projects = projects.filter(p => p.id !== projectId);
+   32:         localStorage.setItem(this.storageKey, JSON.stringify(projects));
+   33:     }
+   34:     generateId() { return 'project_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
+   35: }
+   36: 
+   37: 
+   38: 

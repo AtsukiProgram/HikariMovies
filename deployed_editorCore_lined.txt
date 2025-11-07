@@ -1,0 +1,147 @@
+    1: export class EditorCore {
+    2:     constructor() {
+    3:         this.canvas = document.getElementById('preview-canvas');
+    4:         this.ctx = this.canvas.getContext('2d');
+    5:         this.projectData = this.createEmptyProject();
+    6:         this.isPlaying = false;
+    7:         this.currentTime = 0;
+    8:         this.duration = 30;
+    9:         this.fps = 30;
+   10:         this.animationFrameId = null;
+   11:         this.selectedObject = null;
+   12:         this.initCanvas();
+   13:         this.setupPlayback();
+   14:     }
+   15:     initCanvas() {
+   16:         this.canvas.width = 1920;
+   17:         this.canvas.height = 1080;
+   18:         this.render();
+   19:     }
+   20:     createEmptyProject() {
+   21:         return {
+   22:             id: null,
+   23:             name: '無題のプロジェクト',
+   24:             width: 1920,
+   25:             height: 1080,
+   26:             fps: 30,
+   27:             duration: 30,
+   28:             objects: []
+   29:         };
+   30:     }
+   31:     setupPlayback() {
+   32:         const playBtn = document.getElementById('play-pause-btn');
+   33:         if (playBtn) playBtn.addEventListener('click', () => this.togglePlayback());
+   34:     }
+   35:     togglePlayback() {
+   36:         this.isPlaying = !this.isPlaying;
+   37:         const playBtn = document.getElementById('play-pause-btn');
+   38:         if (playBtn) playBtn.textContent = this.isPlaying ? '⏸️' : '▶️';
+   39:         if (this.isPlaying) this.play(); else this.pause();
+   40:     }
+   41:     play() {
+   42:         const startTime = performance.now();
+   43:         const initialTime = this.currentTime;
+   44:         const animate = (timestamp) => {
+   45:             if (!this.isPlaying) return;
+   46:             const elapsed = (timestamp - startTime) / 1000;
+   47:             this.currentTime = initialTime + elapsed;
+   48:             if (this.currentTime >= this.duration) this.currentTime = 0;
+   49:             this.updateTimeDisplay();
+   50:             this.render();
+   51:             this.animationFrameId = requestAnimationFrame(animate);
+   52:         };
+   53:         this.animationFrameId = requestAnimationFrame(animate);
+   54:     }
+   55:     pause() {
+   56:         if (this.animationFrameId) {
+   57:             cancelAnimationFrame(this.animationFrameId);
+   58:             this.animationFrameId = null;
+   59:         }
+   60:     }
+   61:     updateTimeDisplay() {
+   62:         const current = this.formatTime(this.currentTime);
+   63:         const total = this.formatTime(this.duration);
+   64:         const display = document.getElementById('time-display');
+   65:         if (display) display.textContent = current + ' / ' + total;
+   66:     }
+   67:     formatTime(seconds) {
+   68:         const mins = Math.floor(seconds / 60);
+   69:         const secs = Math.floor(seconds % 60);
+   70:         return mins + ':' + secs.toString().padStart(2, '0');
+   71:     }
+   72:     render() {
+   73:         this.ctx.fillStyle = '#000000';
+   74:         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+   75:         const scaleX = this.canvas.width / this.projectData.width;
+   76:         const scaleY = this.canvas.height / this.projectData.height;
+   77:         this.ctx.scale(scaleX, scaleY);
+   78:         this.projectData.objects.forEach(obj => this.renderObject(obj));
+   79:         this.ctx.resetTransform();
+   80:     }
+   81:     renderObject(obj) {
+   82:         const visible = this.isObjectVisible(obj);
+   83:         if (!visible) return;
+   84:         this.ctx.save();
+   85:         if (obj.transform) {
+   86:             const t = obj.transform;
+   87:             this.ctx.translate(t.x || 0, t.y || 0);
+   88:             this.ctx.rotate(((t.rotation || 0) * Math.PI) / 180);
+   89:             this.ctx.scale(t.scaleX || 1, t.scaleY || 1);
+   90:         }
+   91:         this.ctx.globalAlpha = obj.opacity || 1;
+   92:         if (obj.type === 'rect') this.renderRect(obj);
+   93:         else if (obj.type === 'circle') this.renderCircle(obj);
+   94:         else if (obj.type === 'text') this.renderText(obj);
+   95:         else if (obj.type === 'image') this.renderImage(obj);
+   96:         this.ctx.restore();
+   97:     }
+   98:     isObjectVisible(obj) {
+   99:         if (!obj.timeline) return true;
+  100:         return this.currentTime >= obj.timeline.start && this.currentTime <= obj.timeline.end;
+  101:     }
+  102:     renderRect(obj) {
+  103:         this.ctx.fillStyle = obj.fillColor || '#ffffff';
+  104:         this.ctx.fillRect(0, 0, obj.width || 100, obj.height || 100);
+  105:     }
+  106:     renderCircle(obj) {
+  107:         this.ctx.fillStyle = obj.fillColor || '#ffffff';
+  108:         this.ctx.beginPath();
+  109:         this.ctx.arc(0, 0, obj.radius || 50, 0, Math.PI * 2);
+  110:         this.ctx.fill();
+  111:     }
+  112:     renderText(obj) {
+  113:         this.ctx.fillStyle = obj.color || '#ffffff';
+  114:         this.ctx.font = (obj.fontSize || 48) + 'px ' + (obj.fontFamily || 'Arial');
+  115:         this.ctx.fillText(obj.text || '', 0, 0);
+  116:     }
+  117:     renderImage(obj) {
+  118:         if (obj.imageElement) {
+  119:             try {
+  120:                 this.ctx.drawImage(obj.imageElement, 0, 0, obj.width || 100, obj.height || 100);
+  121:             } catch (e) {
+  122:                 console.error('画像エラー:', e);
+  123:             }
+  124:         }
+  125:     }
+  126:     addObject(obj) {
+  127:         obj.id = obj.id || this.generateId();
+  128:         obj.timeline = obj.timeline || { start: this.currentTime, end: this.duration };
+  129:         this.projectData.objects.push(obj);
+  130:         this.render();
+  131:     }
+  132:     getProjectData() { return this.projectData; }
+  133:     loadProjectData(data) {
+  134:         this.projectData = data;
+  135:         this.duration = data.duration || 30;
+  136:         this.currentTime = 0;
+  137:         this.render();
+  138:     }
+  139:     start() {
+  140:         this.updateTimeDisplay();
+  141:         this.render();
+  142:     }
+  143:     generateId() { return 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9); }
+  144: }
+  145: 
+  146: 
+  147: 

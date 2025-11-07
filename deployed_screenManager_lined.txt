@@ -1,0 +1,21 @@
+    1: export class ScreenManager {
+    2:     constructor() {
+    3:         this.screens = {
+    4:             'start-screen': document.getElementById('start-screen'),
+    5:             'import-screen': document.getElementById('import-screen'),
+    6:             'editor-screen': document.getElementById('editor-screen')
+    7:         };
+    8:         this.currentScreen = 'start-screen';
+    9:     }
+   10:     showScreen(screenId) {
+   11:         Object.keys(this.screens).forEach(id => this.screens[id].classList.remove('active'));
+   12:         if (this.screens[screenId]) {
+   13:             this.screens[screenId].classList.add('active');
+   14:             this.currentScreen = screenId;
+   15:         }
+   16:     }
+   17:     getCurrentScreen() { return this.currentScreen; }
+   18: }
+   19: 
+   20: 
+   21: 

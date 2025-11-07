@@ -1,0 +1,1 @@
+   56:             card.innerHTML = <h3> + project.name + </h3><p> + new Date(project.lastModified).toLocaleDateString('ja-JP') + </p>;

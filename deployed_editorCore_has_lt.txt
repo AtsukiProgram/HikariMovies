@@ -1,0 +1,1 @@
+  100:         return this.currentTime >= obj.timeline.start && this.currentTime <= obj.timeline.end;
